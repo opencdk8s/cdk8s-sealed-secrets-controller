@@ -1,7 +1,7 @@
 # cdk8s-sealed-secrets-controller
 
 Extends APIObjects for sealed secrets controller.
-Usage:
+## Usage:
 ```
 import { Construct } from 'constructs';
 import { App, Chart, ChartProps } from 'cdk8s';
