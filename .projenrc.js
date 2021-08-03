@@ -19,7 +19,7 @@ const project = new ConstructLibraryCdk8s({
 
 
   peerDeps: [
-    "constructs@^3.3.80"
+    'constructs@^3.3.80',
   ],
   // deps: [],                          /* Runtime dependencies of this module. */
   // description: undefined,            /* The description is just a string that helps people understand the purpose of the package. */
