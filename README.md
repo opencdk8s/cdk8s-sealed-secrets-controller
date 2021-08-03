@@ -7,7 +7,6 @@ import { Construct } from 'constructs';
 import { App, Chart, ChartProps } from 'cdk8s';
 import { SealedSecretsTemplate } from '@opencdk8s/cdk8s-sealed-secrets-controller';
 
-
 export class MyChart extends Chart {
   constructor(scope: Construct, id: string, props: ChartProps = { }) {
     super(scope, id, props);
