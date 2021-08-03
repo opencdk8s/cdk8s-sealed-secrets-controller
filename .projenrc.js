@@ -2,7 +2,7 @@ const { ConstructLibraryCdk8s, NpmAccess } = require('projen');
 const project = new ConstructLibraryCdk8s({
   author: 'Gagan Singh',
   authorAddress: 'gaganpreet.singh@smallcase.com',
-  cdk8sVersion: '1.0.0-beta.24',
+  cdk8sVersion: '1.0.0-beta.21',
   cdk8sPlusVersion: '1.0.0-beta.24',
   constructsVersion: '3.3.80',
   defaultReleaseBranch: 'main',

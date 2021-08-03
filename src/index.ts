@@ -1,36 +1,51 @@
-import { ApiObject, GroupVersionKind } from 'cdk8s';
+import { ApiObject } from 'cdk8s';
 import { Construct } from 'constructs';
 export * as k8s from './imports/k8s';
 
 export class ControllerStrategy {
-  readonly type: string;
+  readonly type?: string;
   readonly maxUnavailable?: string;
   readonly maxSurge?: string;
 }
 
-export class ControllerSpecs {
+export class SealedSecretsControllerOptions {
+  readonly name?: string;
+  readonly namespace?: string;
+  readonly strategy?: ControllerStrategy;
   readonly args?: string[];
   readonly command?: string[];
   readonly env?: string[];
   readonly image?: string;
-  readonly name?: string;
   readonly runAsNonRoot?: boolean;
   readonly minReadySeconds?: number;
   readonly replicas?: number;
-  readonly serviceAccountName?: string;
   readonly selector?: string;
 }
 
-export class SealedSecretsControllerOptions {
-  readonly name: string;
-  readonly namespace: string;
-  readonly strategy: ControllerStrategy;
-  readonly spec: ControllerSpecs;
-}
-
 export class SealedSecretsTemplate extends Construct {
+
+  private name: string;
+  private namespace: string;
+  private args: string[];
+  private command: string[];
+  private env: string[];
+  private image: string;
+  private runAsNonRoot: boolean;
+  private minReadySeconds: number;
+  private replicas: number;
+
   constructor(scope: Construct, id: string, options: SealedSecretsControllerOptions) {
     super(scope, id);
+
+    this.name = options.name ?? 'sealed-secrets-controller';
+    this.namespace = options.namespace ?? 'kube-system';
+    this.args = [];
+    this.command = options.command ?? ['controller'];
+    this.env = [];
+    this.image = options.image ?? 'quay.io/bitnami/sealed-secrets-controller:v0.9.8';
+    this.runAsNonRoot = options.runAsNonRoot ?? true;
+    this.minReadySeconds = options.minReadySeconds ?? 30;
+    this.replicas = options.replicas ?? 1;
 
     // ServiceAccount
     new ApiObject(this, 'sealed-secrets-service-account', {
@@ -39,10 +54,10 @@ export class SealedSecretsTemplate extends Construct {
       metadata: {
         annotations: {},
         labels: {
-          name: options.name,
+          name: this.name,
         },
-        name: options.name,
-        namespace: options.namespace,
+        name: this.name,
+        namespace: this.namespace,
       },
     });
 
@@ -53,39 +68,39 @@ export class SealedSecretsTemplate extends Construct {
       metadata: {
         annotations: {},
         labels: {
-          name: options.name,
+          name: this.name,
         },
-        name: options.name,
-        namespace: options.namespace,
+        name: this.name,
+        namespace: this.namespace,
       },
       spec: {
-        minReadySeconds: options.spec.minReadySeconds ?? 30,
-        replicas: options.spec.replicas ?? 1,
+        minReadySeconds: this.minReadySeconds ?? 30,
+        replicas: this.replicas ?? 1,
         revisionHistoryLimit: 10,
-        ... options.spec.selector ? {
+        ... options.selector ? {
           strategy: {
             matchLabels: {
-              name: options.name,
+              name: options.selector,
             },
           },
         }:{},
         strategy: {
-          ... this.getStrategy(options.strategy),
+          ... this.getStrategy(),
         },
         template: {
           metadata: {
             annotations: {},
             labels: {
-              name: options.name,
+              name: this.name,
             },
           },
           spec: {
             containers: [
               {
-                args: options.spec.args ?? [],
-                command: options.spec.command ?? ['controller'],
-                env: options.spec.env ?? [],
-                image: options.spec.image ?? 'quay.io/bitnami/sealed-secrets-controller:v0.9.8',
+                args: this.args ?? [],
+                command: this.command ?? ['controller'],
+                env: this.env ?? [],
+                image: this.image ?? 'quay.io/bitnami/sealed-secrets-controller:v0.9.8',
                 imagePullPolicy: 'Always',
                 livenessProbe: {
                   httpGet: {
@@ -93,7 +108,7 @@ export class SealedSecretsTemplate extends Construct {
                     port: 'http',
                   },
                 },
-                name: options.name,
+                name: this.name,
                 ports: [
                   {
                     containerPort: 8080,
@@ -108,7 +123,7 @@ export class SealedSecretsTemplate extends Construct {
                 },
                 securityContext: {
                   readOnlyRootFilesystem: true,
-                  runAsNonRoot: options.spec.runAsNonRoot ?? true,
+                  runAsNonRoot: this.runAsNonRoot ?? true,
                   runAsUser: 1001,
                 },
                 stdin: false,
@@ -128,7 +143,7 @@ export class SealedSecretsTemplate extends Construct {
             securityContext: {
               fsGroup: 65534,
             },
-            serviceAccountName: options.name,
+            serviceAccountName: this.name,
             terminationGracePeriodSeconds: 30,
             volumes: [
               {
@@ -148,10 +163,10 @@ export class SealedSecretsTemplate extends Construct {
       metadata: {
         annotations: {},
         labels: {
-          name: options.name,
+          name: this.name,
         },
-        name: options.name,
-        namespace: options.namespace,
+        name: this.name,
+        namespace: this.namespace,
       },
       spec: {
         ports: [
@@ -159,7 +174,7 @@ export class SealedSecretsTemplate extends Construct {
             port: 8080,
             targetPort: 8080,
             selector: {
-              name: options.name,
+              name: this.name,
             },
             type: 'ClusterIP',
           },
@@ -177,14 +192,14 @@ export class SealedSecretsTemplate extends Construct {
           name: 'sealed-secrets-service-proxier',
         },
         name: 'sealed-secrets-service-proxier',
-        namespace: options.namespace,
+        namespace: this.namespace,
       },
       rules: [
         {
           apiGroups: [],
           resourceNames: [
-            options.name,
-            'http:' + options.name + ':',
+            this.name,
+            'http:' + this.name + ':',
           ],
           resources: [
             'services/proxy',
@@ -207,7 +222,7 @@ export class SealedSecretsTemplate extends Construct {
           name: 'sealed-secrets-key-admin',
         },
         name: 'sealed-secrets-key-admin',
-        namespace: options.namespace,
+        namespace: this.namespace,
       },
       rules: [
         {
@@ -304,7 +319,7 @@ export class SealedSecretsTemplate extends Construct {
           name: 'sealed-secrets-service-proxier',
         },
         name: 'sealed-secrets-service-proxier',
-        namespace: options.namespace,
+        namespace: this.namespace,
       },
       roleRef: {
         apiGroup: 'rbac.authorization.k8s.io',
@@ -328,10 +343,10 @@ export class SealedSecretsTemplate extends Construct {
       metadata: {
         annotations: {},
         labels: {
-          name: options.name,
+          name: this.name,
         },
-        name: options.name,
-        namespace: options.namespace,
+        name: this.name,
+        namespace: this.namespace,
       },
       roleRef: {
         apiGroup: 'rbac.authorization.k8s.io',
@@ -341,8 +356,8 @@ export class SealedSecretsTemplate extends Construct {
       subjects: [
         {
           kind: 'ServiceAccount',
-          name: options.name,
-          namespace: options.namespace,
+          name: this.name,
+          namespace: this.namespace,
         },
       ],
     });
@@ -354,10 +369,10 @@ export class SealedSecretsTemplate extends Construct {
       metadata: {
         annotations: {},
         labels: {
-          name: options.name,
+          name: this.name,
         },
-        name: options.name,
-        namespace: options.namespace,
+        name: this.name,
+        namespace: this.namespace,
       },
       roleRef: {
         apiGroup: 'rbac.authorization.k8s.io',
@@ -367,8 +382,8 @@ export class SealedSecretsTemplate extends Construct {
       subjects: [
         {
           kind: 'ServiceAccount',
-          name: options.name,
-          namespace: options.namespace,
+          name: this.name,
+          namespace: this.namespace,
         },
       ],
     });
@@ -380,10 +395,10 @@ export class SealedSecretsTemplate extends Construct {
       metadata: {
         annotations: {},
         labels: {
-          name: options.name,
+          name: this.name,
         },
-        name: options.name,
-        namespace: options.namespace,
+        name: this.name,
+        namespace: this.namespace,
       },
       roleRef: {
         apiGroup: 'rbac.authorization.k8s.io',
@@ -393,21 +408,19 @@ export class SealedSecretsTemplate extends Construct {
       subjects: [
         {
           kind: 'ServiceAccount',
-          name: options.name,
-          namespace: options.namespace,
+          name: this.name,
+          namespace: this.namespace,
         },
       ],
     });
   }
 
-  private getStrategy(options: ControllerStrategy) {
-    if (options.type == 'RollingUpdate') {
-      return {
-        rollingUpdate: {
-          maxSurge: options.maxSurge ?? '25%',
-          maxUnavailable: options.maxUnavailable ?? '25%',
-        },
-      };
-    }
+  private getStrategy() {
+    return {
+      rollingUpdate: {
+        maxSurge: '25%',
+        maxUnavailable: '25%',
+      },
+    };
   }
 }
