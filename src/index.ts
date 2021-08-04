@@ -200,7 +200,9 @@ export class SealedSecretsTemplate extends Construct {
       },
       rules: [
         {
-          apiGroups: [],
+          apiGroups: [
+            '',
+          ],
           resourceNames: [
             this.name,
             'http:' + this.name + ':',
@@ -230,7 +232,9 @@ export class SealedSecretsTemplate extends Construct {
       },
       rules: [
         {
-          apiGroups: [],
+          apiGroups: [
+            '',
+          ],
           resources: [
             'secrets',
           ],
@@ -269,7 +273,9 @@ export class SealedSecretsTemplate extends Construct {
           ],
         },
         {
-          apiGroups: [],
+          apiGroups: [
+            '',
+          ],
           resources: [
             'secrets',
           ],
@@ -281,7 +287,9 @@ export class SealedSecretsTemplate extends Construct {
           ],
         },
         {
-          apiGroups: [],
+          apiGroups: [
+            '',
+          ],
           resources: [
             'events',
           ],
@@ -425,6 +433,7 @@ export class SealedSecretsTemplate extends Construct {
         maxSurge: '25%',
         maxUnavailable: '25%',
       },
+      type: 'RollingUpdate',
     };
   }
 }
