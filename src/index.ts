@@ -179,12 +179,12 @@ export class SealedSecretsTemplate extends Construct {
           {
             port: 8080,
             targetPort: 8080,
-            selector: {
-              name: this.name,
-            },
             type: 'ClusterIP',
           },
         ],
+        selector: {
+          name: this.name,
+        },
       },
     });
 
