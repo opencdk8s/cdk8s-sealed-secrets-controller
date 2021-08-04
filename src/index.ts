@@ -140,8 +140,6 @@ export class SealedSecretsTemplate extends Construct {
                     name: 'tmp',
                   },
                 ],
-                imagePullSecrets: [],
-                initContainers: [],
               },
             ],
             initContainers: [],
