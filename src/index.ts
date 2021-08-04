@@ -78,12 +78,18 @@ export class SealedSecretsTemplate extends Construct {
         replicas: this.replicas ?? 1,
         revisionHistoryLimit: 10,
         ... options.selector ? {
-          strategy: {
+          selector: {
             matchLabels: {
               name: options.selector,
             },
           },
-        }:{},
+        }:{
+          selector: {
+            matchLabels: {
+              name: options.name,
+            },
+          },
+        },
         strategy: {
           ... this.getStrategy(),
         },
