@@ -263,7 +263,7 @@ export class SealedSecretsTemplate extends Construct {
             'bitnami.com',
           ],
           resources: [
-            'sealedSecrets',
+            'sealedsecrets',
           ],
           verbs: [
             'get',
