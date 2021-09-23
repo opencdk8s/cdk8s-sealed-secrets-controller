@@ -219,9 +219,9 @@ export class SealedSecretsTemplate extends Construct {
     });
 
     // Key admin role
-    new ApiObject(this, 'sealed-secrets-key-admin-role', {
+    new ApiObject(this, 'sealed-secrets-key-admin-clusterrole', {
       apiVersion: 'rbac.authorization.k8s.io/v1beta1',
-      kind: 'Role',
+      kind: 'ClusterRole',
       metadata: {
         annotations: {},
         labels: {
