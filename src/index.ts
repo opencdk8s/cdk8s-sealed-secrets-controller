@@ -362,7 +362,7 @@ export class SealedSecretsTemplate extends Construct {
       },
       roleRef: {
         apiGroup: 'rbac.authorization.k8s.io',
-        kind: 'Role',
+        kind: 'ClusterRole',
         name: 'sealed-secrets-key-admin',
       },
       subjects: [
@@ -381,14 +381,14 @@ export class SealedSecretsTemplate extends Construct {
       metadata: {
         annotations: {},
         labels: {
-          name: this.name,
+          name: this.name + '-key-admin',
         },
-        name: this.name,
+        name: this.name + '-key-admin',
         namespace: this.namespace,
       },
       roleRef: {
         apiGroup: 'rbac.authorization.k8s.io',
-        kind: 'Role',
+        kind: 'ClusterRole',
         name: 'sealed-secrets-key-admin',
       },
       subjects: [
@@ -407,9 +407,9 @@ export class SealedSecretsTemplate extends Construct {
       metadata: {
         annotations: {},
         labels: {
-          name: this.name,
+          name: this.name + '-unsealer',
         },
-        name: this.name,
+        name: this.name + '-unsealer',
         namespace: this.namespace,
       },
       roleRef: {
