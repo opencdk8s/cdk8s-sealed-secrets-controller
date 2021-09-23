@@ -362,7 +362,7 @@ export class SealedSecretsTemplate extends Construct {
       },
       roleRef: {
         apiGroup: 'rbac.authorization.k8s.io',
-        kind: 'Role',
+        kind: 'ClusterRole',
         name: 'sealed-secrets-key-admin',
       },
       subjects: [
