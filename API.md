@@ -119,10 +119,10 @@ public readonly command: string[];
 ##### `env`<sup>Optional</sup> <a name="@opencdk8s/cdk8s-sealed-secrets-controller.SealedSecretsControllerOptions.property.env"></a>
 
 ```typescript
-public readonly env: string[];
+public readonly env: EnvVar[];
 ```
 
-- *Type:* `string`[]
+- *Type:* [`@opencdk8s/cdk8s-sealed-secrets-controller.k8s.EnvVar`](#@opencdk8s/cdk8s-sealed-secrets-controller.k8s.EnvVar)[]
 
 ---
 
@@ -133,6 +133,16 @@ public readonly image: string;
 ```
 
 - *Type:* `string`
+
+---
+
+##### `labels`<sup>Optional</sup> <a name="@opencdk8s/cdk8s-sealed-secrets-controller.SealedSecretsControllerOptions.property.labels"></a>
+
+```typescript
+public readonly labels: {[ key: string ]: string};
+```
+
+- *Type:* {[ key: string ]: `string`}
 
 ---
 
@@ -176,6 +186,16 @@ public readonly replicas: number;
 
 ---
 
+##### `resources`<sup>Optional</sup> <a name="@opencdk8s/cdk8s-sealed-secrets-controller.SealedSecretsControllerOptions.property.resources"></a>
+
+```typescript
+public readonly resources: ResourceRequirements;
+```
+
+- *Type:* [`@opencdk8s/cdk8s-sealed-secrets-controller.k8s.ResourceRequirements`](#@opencdk8s/cdk8s-sealed-secrets-controller.k8s.ResourceRequirements)
+
+---
+
 ##### `runAsNonRoot`<sup>Optional</sup> <a name="@opencdk8s/cdk8s-sealed-secrets-controller.SealedSecretsControllerOptions.property.runAsNonRoot"></a>
 
 ```typescript
@@ -183,16 +203,6 @@ public readonly runAsNonRoot: boolean;
 ```
 
 - *Type:* `boolean`
-
----
-
-##### `selector`<sup>Optional</sup> <a name="@opencdk8s/cdk8s-sealed-secrets-controller.SealedSecretsControllerOptions.property.selector"></a>
-
-```typescript
-public readonly selector: string;
-```
-
-- *Type:* `string`
 
 ---
 
